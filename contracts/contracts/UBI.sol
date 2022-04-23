@@ -11,19 +11,20 @@ contract UBI {
     mapping(address => bool) private subscribersMap;
     address[] private subscribers;
 
-    uint256 private monthlyIncome = 0.001 ether;
+    uint256 private dailyIncome = 0.001 ether;
 
-    constructor(address _backend) {
+    constructor(address _backend, uint256 _dailyIncome) {
         owner = msg.sender;
         backend = _backend;
+        dailyIncome = _dailyIncome;
     }
 
     function getMonthlyIncome() public view returns (uint256) {
-        return monthlyIncome;
+        return dailyIncome;
     }
 
-    function setMonthlyIncome(uint256 _monthlyIncome) public onlyOwner {
-        monthlyIncome = _monthlyIncome;
+    function setMonthlyIncome(uint256 _dailyIncome) public onlyOwner {
+        dailyIncome = _dailyIncome;
     }
 
     function getBackend() public view onlyOwner returns (address) {
@@ -59,9 +60,9 @@ contract UBI {
     function distribute() public onlyBackend {
         // TODO don't allow too frequent distribution
 
-        require(address(this).balance > monthlyIncome * subscribers.length, "Not enough funds for distribution.");
+        require(address(this).balance > dailyIncome * subscribers.length, "Not enough funds for distribution.");
         for (uint256 i = 0; i < subscribers.length; i++) {
-            (bool success, ) = subscribers[i].call{value: monthlyIncome}("");
+            (bool success, ) = subscribers[i].call{value: dailyIncome}("");
             require(success, "Distribution failed.");
         }
     }
