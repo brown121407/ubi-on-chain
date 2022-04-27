@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { UBIContext } from "./UBIContextProvider";
+import { networks, UBIContext } from "./UBIContextProvider";
 
 const WalletConnector = () => {
     const [address, setAddress] = useState();
@@ -38,7 +38,7 @@ const WalletConnector = () => {
             { !provider
             ? <p>Your browser doesn't have Metamask installed. 😢</p>
             : (address
-                ? <p className="text-ellipsis">Connected: { address }</p>
+                ? <p className="text-ellipsis">Connected: { address } on { networks.find(x => x.chainId === metamask.chainId).name }</p>
                 : <button className="button" onClick={connectWallet}>Connect Wallet</button>
                 )
             }

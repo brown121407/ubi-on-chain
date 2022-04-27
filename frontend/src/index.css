@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .button {
-    @apply px-2 py-1 font-bold border-2 rounded-lg cursor-pointer border-zinc-500 inline-block;
+    @apply px-2 py-1 font-bold border-2 rounded-lg cursor-pointer border-zinc-500 inline-flex justify-center items-center;
     box-shadow: 0 2px #7A7171;
 }
 

@@ -37,7 +37,7 @@ const UBIContextProvider = ({ children }) => {
     // TODO: nu mai fi bou
     const network = networks.filter(x => x.chainId === window.ethereum.chainId)[0];
     context.contract = new ethers.Contract(network.contractAddress, UBI.abi, context.provider.getSigner());
- }
+  }
 
   return (
     <UBIContext.Provider value={context}>
