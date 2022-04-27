@@ -19,11 +19,11 @@ contract UBI {
         dailyIncome = _dailyIncome;
     }
 
-    function getMonthlyIncome() public view returns (uint256) {
+    function getDailyIncome() public view returns (uint256) {
         return dailyIncome;
     }
 
-    function setMonthlyIncome(uint256 _dailyIncome) public onlyOwner {
+    function setDailyIncome(uint256 _dailyIncome) public onlyOwner {
         dailyIncome = _dailyIncome;
     }
 
