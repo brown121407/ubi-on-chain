@@ -1,12 +1,13 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import { CronJob } from "cron";
 import ethers from "ethers";
 import env from "./environments/index.js";
 import winston from "winston";
 import { format } from "logform";
-import dotenv from "dotenv";
 import { createRequire } from "module";
 
-dotenv.config();
 
 const require = createRequire(import.meta.url);
 const UBI = require("../contracts/artifacts/contracts/UBI.sol/UBI.json");
@@ -39,23 +40,46 @@ const contracts = networks.map((network, i) => {
 for (const contract of contracts) {
     // TODO only react to *new* events
     contract.on("Subscribed", (subscriber, event) => {
-        // TODO subscribe on other chains
-
         logger.info(`${subscriber} subscribed to ${contract.networkName}`);
+        logger.info("Adding cross chain subscriptions");
+        contracts
+            .filter((otherContract) => otherContract !== contract)
+            .forEach(async (otherContract) => {
+                try {
+                    await otherContract.addCrossChainSubscription(subscriber, {gasLimit: 100000});
+                } catch (e) {
+                    logger.error(e.toString());
+                }
+            });
     });
 
     contract.on("Unsubscribed", (subscriber, event) => {
-        // TODO unsubscribe on other chains
-
         logger.info(`${subscriber} unsubscribed to ${contract.networkName}`);
+        logger.info("Removing cross chain subscriptions");
+
+        contracts
+            .filter((otherContract) => otherContract !== contract)
+            .forEach(async (otherContract) => {
+                try {
+                    await otherContract.cancelCrossChainSubscription(subscriber, {gasLimit: 100000});
+                } catch (e) {
+                    logger.error(e.toString());
+                }
+            });
     });
 }
 
-// TODO: Make the job run once per day and treat exceptions so it doesn't crash
+// TODO: Make the job run once per day
 const job = new CronJob('* * * * *', async function () {
-    logger.info(new Date().toLocaleTimeString());
-    let txns = contracts.map((contract) => contract.distribute());
-    await Promise.all(txns);
+    logger.info("Starting new distribution.");
+
+    try {
+        let txns = contracts.map((contract) => contract.distribute({gasLimit: 120000}));
+        await Promise.all(txns);
+        logger.info("Finished distribution successfully.");
+    } catch (e) {
+        logger.error(e.toString());
+    }
 });
 
 logger.info("Starting cron job...");

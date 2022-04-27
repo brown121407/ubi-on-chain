@@ -35,6 +35,14 @@ contract UBI {
         backend = _backend;
     }
 
+    function getSubscribers() public view returns (address[] memory) {
+        return subscribers;
+    }
+
+    function isSubscribed() public view returns (bool) {
+        return subscribersMap[msg.sender];
+    }
+
     function subscribe() public {
         require(msg.sender != backend, "The backend can't subscribe.");
 
@@ -59,6 +67,10 @@ contract UBI {
 
     function distribute() public onlyBackend {
         // TODO don't allow too frequent distribution
+
+        if (subscribers.length == 0) {
+            return;
+        }
 
         require(address(this).balance > dailyIncome * subscribers.length, "Not enough funds for distribution.");
         for (uint256 i = 0; i < subscribers.length; i++) {

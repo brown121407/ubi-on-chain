@@ -28,6 +28,18 @@ module.exports = {
     },
     localhost3: {
       url: "http://127.0.0.1:8547"
+    },
+    rinkeby: {
+      url: process.env.RINKEBY_URL,
+      accounts: [process.env.PRIVATE_KEY]
+    },
+    mumbai: {
+      url: process.env.MUMBAI_URL,
+      accounts: [process.env.PRIVATE_KEY]
+    },
+    bsct: {
+      url: process.env.BSCT_URL,
+      accounts: [process.env.PRIVATE_KEY]
     }
   }
 };
